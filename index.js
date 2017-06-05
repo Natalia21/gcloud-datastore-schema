@@ -76,14 +76,15 @@ var validateSchema = function (schema, data) {
   var dataProperties = Object.keys(data)
 
   for (var prop in schema) {
-    var validator = schema[prop]
+    var validator = schema[prop]['type']
+    var isRequired = schema[prop]['required']
 
     if (!validator) {
       errorMessages.push('Schema definition not found for property: "' + prop + '"')
       continue
     }
 
-    if (!is.defined(data[prop])) {
+    if (isRequired && !is.defined(data[prop])) {
       errorMessages.push('Schema definition expected property: "' + prop + '"')
       continue
     }
@@ -119,7 +120,7 @@ var validateSchema = function (schema, data) {
             if (errors.length > 0) nestedErrorMessages = errors
           })
       }
-    } else {
+    } else if (value) {
       errorMessages = errorMessages.concat(validateType(validator, prop, value))
     }
 
